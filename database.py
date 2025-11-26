@@ -8,33 +8,54 @@ cursor = conexion.cursor()
 
 # for create a table
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
+    CREATE TABLE IF NOT EXISTS qrs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT,
-        edad INTEGER
-    )
+        name_logo TEXT NOT NULL,
+        name_qr TEXT NOT NULL,
+        destination_url TEXT NOT NULL,
+        server_url TEXT NOT NULL,
+        unique_id TEXT NOT NULL
+    );
 """)
 
-# for insert
-cursor.execute("INSERT INTO usuarios (nombre, edad) VALUES (?, ?)", ("Alejandro", 20))
-cursor.execute("INSERT INTO usuarios (nombre, edad) VALUES (?, ?)", ("Maria", 22))
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users_scam (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        qr_id INTEGER NOT NULL,
+        ip TEXT NOT NULL,
+        device TEXT,
+        country TEXT,
+        city TEXT,
+        latitude REAL,
+        longitude REAL,
+        datetime TEXT DEFAULT CURRENT_TIMESTAMP,
+        
+        FOREIGN KEY (qr_id) REFERENCES qrs(id)
+            ON DELETE CASCADE
+    );
+""")
 
-# for select
-print("\nUsuarios:")
-cursor.execute("SELECT * FROM usuarios")
-for fila in cursor.fetchall():
-    print(fila)
+"""Examples"""
+# # for insert
+# cursor.execute("INSERT INTO usuarios (nombre, edad) VALUES (?, ?)", ("Alejandro", 20))
+# cursor.execute("INSERT INTO usuarios (nombre, edad) VALUES (?, ?)", ("Maria", 22))
 
-# for update
-cursor.execute("UPDATE usuarios SET edad = ? WHERE nombre = ?", (21, "Alejandro"))
+# # for select
+# print("\nUsuarios:")
+# cursor.execute("SELECT * FROM usuarios")
+# for fila in cursor.fetchall():
+#     print(fila)
 
-# for delete
-cursor.execute("DELETE FROM usuarios WHERE nombre = ?", ("Alejandro",))
+# # for update
+# cursor.execute("UPDATE usuarios SET edad = ? WHERE nombre = ?", (21, "Alejandro"))
 
-print("\nUsuarios:")
-cursor.execute("SELECT * FROM usuarios")
-for fila in cursor.fetchall():
-    print(fila)
+# # for delete
+# cursor.execute("DELETE FROM usuarios WHERE nombre = ?", ("Alejandro",))
+
+# print("\nUsuarios:")
+# cursor.execute("SELECT * FROM usuarios")
+# for fila in cursor.fetchall():
+#     print(fila)
 
 # for save
 conexion.commit()

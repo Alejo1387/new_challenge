@@ -1,6 +1,20 @@
+# create Qr
 import qrcode
+# validate URL
 from urllib.parse import urlparse
+# word with images
 from PIL import Image
+import sqlite3
+# for create unique id
+import uuid
+
+# funtion for the conexion in the DB
+def get_db():
+    # check_same_thread=False this is for don't have error in diferents conexions
+    conn = sqlite3.connect("mi_base.db", check_same_thread=False)
+    # this is for get rows by name 
+    conn.row_factory = sqlite3.Row
+    return conn
 
 # function for validate url
 def validate_url(url):
@@ -11,6 +25,14 @@ def validate_url(url):
 # function for make qrs
 def qrs(url, fileName, logo_archive=None):
     if(validate_url(url)):
+        # conexion
+        db = get_db()
+        cursor = db.cursor()
+
+        # create unique id
+        unique_id = uuid.uuid4().hex[:12]
+        server_url = f"http://127.0.0.1:8000/qr-link/{unique_id}"
+
         # advanced settings
         qr_code = qrcode.QRCode(
             # size of qr
@@ -24,7 +46,7 @@ def qrs(url, fileName, logo_archive=None):
         )
 
         # insert URL to image
-        qr_code.add_data(url)
+        qr_code.add_data(server_url)
         # adjust the size
         qr_code.make(fit=True)
 
@@ -57,6 +79,20 @@ def qrs(url, fileName, logo_archive=None):
         save_img = "img/" + (fileName + ".png")
         qr_img.save(save_img)
 
+        cursor.execute("""
+            INSERT INTO qrs (name_logo, name_qr, destination_url, server_url, unique_id)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            logo_archive,
+            f"{fileName}.png",
+            url,
+            server_url,
+            unique_id
+        ))
+
+        db.commit()
+        db.close()
+
         # img = qrcode.make(url)
         # img.save(save_img)
         print("qr generado")
@@ -64,12 +100,12 @@ def qrs(url, fileName, logo_archive=None):
         print("URL mal escrita")
 
 
-# url = "https://www.youtube.com/"
-# name = "Youtube"
-# logoName = "logoYoutube.png"
+url = "https://www.youtube.com/"
+name = "Youtube"
+logoName = "logoYoutube.png"
 
-# qrs(url, name, logoName)
+qrs(url, name, logoName)
 
-url = "https://www.speedtest.net/"
-name = "Speedtest"
-qrs(url, name)
+# url = "https://www.speedtest.net/"
+# name = "Speedtest"
+# qrs(url, name)
