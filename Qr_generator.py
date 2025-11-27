@@ -100,11 +100,11 @@ def qrs(url, fileName, logo_archive=None):
         print("URL mal escrita")
 
 
-url = "https://www.youtube.com/"
-name = "Youtube"
-logoName = "logoYoutube.png"
+# url = "https://www.youtube.com/"
+# name = "Youtube"
+# logoName = "logoYoutube.png"
 
-qrs(url, name, logoName)
+# qrs(url, name, logoName)
 
 # url = "https://www.speedtest.net/"
 # name = "Speedtest"

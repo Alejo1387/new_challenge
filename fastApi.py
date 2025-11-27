@@ -90,4 +90,5 @@ async def scan_qr(qr_id: str, request: Request):
         return RedirectResponse(url=url_destino)
 
     except Exception as e:
+        # return error
         raise HTTPException(status_code=500, detail=str(e))
