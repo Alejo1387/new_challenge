@@ -25,6 +25,8 @@ def get_db():
 # for get the data
 def get_geo_ip(ip):
     try:
+
+        # https://ipapi.com/pricing 100 free requests per month (We need a different)
         url = f"https://ipapi.co/{ip}/json/"
         # timeout=5 avoid error in the API
         response = requests.get(url, timeout=5)
