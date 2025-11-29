@@ -5,13 +5,15 @@ HTTPException for throw errors with HTTP codes
 """
 from fastapi import FastAPI, Request, HTTPException
 # for redirect to other URL
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 # for connect with DB
 import sqlite3
 # for get results of others APIs
 import requests
 # for get the time
 from datetime import datetime
+# archive for create Qr
+from Qr_generator import qrs
 
 app = FastAPI()
 
@@ -40,8 +42,20 @@ def get_geo_ip(ip):
         }
     except:
         return None
+    
+# it's the API-KEY
+X_API_KEY = "G7pK3wQ9"
 
-@app.get("/qr-link/{qr_id}")
+# funtion for check passwork api
+def check_api(request: Request):
+    api_key = request.headers.get("X-API-KEY")
+    if api_key != X_API_KEY:
+        raise HTTPException(status_code=401, detail="API KEY inválida")
+    return True
+
+
+""" ---------- APIs ---------- """
+@app.get("/scam/{qr_id}")
 async def scan_qr(qr_id: str, request: Request):
     try:
         # 1. get IP
@@ -94,3 +108,26 @@ async def scan_qr(qr_id: str, request: Request):
     except Exception as e:
         # return error
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/create")
+async def create_qr(request: Request):
+    # verify api key
+    check_api(request)
+
+    # it's for get data
+    data = await request.json()
+
+    url = data.get("url")
+    name = data.get("name")
+    logoname = data.get("logoname")
+
+    # check data
+    if not url or not name:
+        raise HTTPException(status_code=400, detail="url and name are requared")
+    
+    qrs(url, name, logoname)
+    # print(url, name, logoname)
+
+    return JSONResponse({
+        "message" : "QR create"
+    })

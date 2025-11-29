@@ -1,6 +1,6 @@
 import requests
 
-url_api = "http://127.0.0.1:8000/create_qr"
+url_api = "http://127.0.0.1:8000/create"
 api_key = "G7pK3wQ9"
 
 data = {
