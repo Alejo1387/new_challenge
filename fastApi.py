@@ -3,7 +3,7 @@ FastAPI for create servidor
 Request for read information of client
 HTTPException for throw errors with HTTP codes
 """
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Depends
 # for redirect to other URL
 from fastapi.responses import RedirectResponse, JSONResponse
 # for connect with DB
@@ -14,6 +14,10 @@ import requests
 from datetime import datetime
 # archive for create Qr
 from Qr_generator import qrs
+# for task in second plane
+import asyncio
+# for extract API-KEY
+from fastapi.security.api_key import APIKeyHeader
 
 app = FastAPI()
 
@@ -46,12 +50,42 @@ def get_geo_ip(ip):
 # it's the API-KEY
 X_API_KEY = "G7pK3wQ9"
 
+# Extract the X-API-KEY header
+api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
+
 # funtion for check passwork api
-def check_api(request: Request):
-    api_key = request.headers.get("X-API-KEY")
+async def check_api(api_key: str = Depends(api_key_header)):
     if api_key != X_API_KEY:
         raise HTTPException(status_code=401, detail="API KEY inválida")
     return True
+
+# funtion for get data user while scan QR
+def get_data_user(qr_id, ip_client, user_agent):
+    # 3. get geolocation for IP
+    geo = get_geo_ip(ip_client)
+
+    db = get_db()
+    cursor = db.cursor()
+
+    present_date = datetime.now()
+
+    # 6. Guardar los datos del escaneo
+    cursor.execute("""
+        INSERT INTO users_scam (qr_id, ip, device, country, city, latitude, longitude, datetime)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        qr_id,
+        ip_client,
+        user_agent,
+        geo["country"] if geo else None,
+        geo["city"] if geo else None,
+        geo["latitude"] if geo else None,
+        geo["longitude"] if geo else None,
+        present_date
+    ))
+
+    db.commit()
+    db.close()
 
 
 """ ---------- APIs ---------- """
@@ -66,8 +100,9 @@ async def scan_qr(qr_id: str, request: Request):
         # 2. get User-Agent (type of device)
         user_agent = request.headers.get("user-agent")
 
-        # 3. get geolocation for IP
-        geo = get_geo_ip(ip_client)
+        asyncio.create_task(asyncio.to_thread(
+            get_data_user, qr_id, ip_client, user_agent
+        ))
 
         # 4. Conexión BD
         db = get_db()
@@ -82,24 +117,7 @@ async def scan_qr(qr_id: str, request: Request):
             raise HTTPException(status_code=404, detail="QR no encontrado")
 
         url_destino = data["destination_url"]
-        present_date = datetime.now()
-
-        # 6. Guardar los datos del escaneo
-        cursor.execute("""
-            INSERT INTO users_scam (qr_id, ip, device, country, city, latitude, longitude, datetime)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            qr_id,
-            ip_client,
-            user_agent,
-            geo["country"] if geo else None,
-            geo["city"] if geo else None,
-            geo["latitude"] if geo else None,
-            geo["longitude"] if geo else None,
-            present_date
-        ))
-
-        db.commit()
+        
         db.close()
 
         # 7. Redirigir
@@ -109,10 +127,10 @@ async def scan_qr(qr_id: str, request: Request):
         # return error
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.post("/create")
+@app.post("/create", dependencies=[Depends(check_api)])
 async def create_qr(request: Request):
     # verify api key
-    check_api(request)
+    # check_api(request)
 
     # it's for get data
     data = await request.json()
