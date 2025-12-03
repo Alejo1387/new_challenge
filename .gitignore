@@ -1,0 +1,12 @@
+# DB
+my_base.db
+
+# Ignore database.py edits
+database.py
+
+# Ignore file edits
+img/
+logos/
+
+# Ignore json files
+example_json.py
