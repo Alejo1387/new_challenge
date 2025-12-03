@@ -11,7 +11,7 @@ import uuid
 # funtion for the conexion in the DB
 def get_db():
     # check_same_thread=False this is for don't have error in diferents conexions
-    conn = sqlite3.connect("mi_base.db", check_same_thread=False)
+    conn = sqlite3.connect("my_base.db", check_same_thread=False)
     # this is for get rows by name 
     conn.row_factory = sqlite3.Row
     return conn
@@ -23,7 +23,7 @@ def validate_url(url):
     return validate.scheme in ("http", "https") and validate.netloc != ""
 
 # function for make qrs
-def qrs(url, fileName, logo_archive=None):
+def qrs(company_id, url, fileName, logo_archive=None):
     if(validate_url(url)):
         # conexion
         db = get_db()
@@ -31,7 +31,7 @@ def qrs(url, fileName, logo_archive=None):
 
         # create unique id
         unique_id = uuid.uuid4().hex[:12]
-        server_url = f"http://127.0.0.1:8000/qr-link/{unique_id}"
+        server_url = f"http://127.0.0.1:8000/scam/{unique_id}"
 
         # advanced settings
         qr_code = qrcode.QRCode(
@@ -80,9 +80,10 @@ def qrs(url, fileName, logo_archive=None):
         qr_img.save(save_img)
 
         cursor.execute("""
-            INSERT INTO qrs (name_logo, name_qr, destination_url, server_url, unique_id)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO qrs (tenant_id, logo_name, qr_name, destination_url, server_url, unique_id)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (
+            company_id,
             logo_archive,
             f"{fileName}.png",
             url,
@@ -95,7 +96,7 @@ def qrs(url, fileName, logo_archive=None):
 
         # img = qrcode.make(url)
         # img.save(save_img)
-        print("qr generado")
+        print(f"qr generado para el id de la company: {company_id}")
     else:
         print("URL mal escrita")
 
