@@ -23,7 +23,7 @@ app = FastAPI()
 
 def get_db():
     # check_same_thread=False this is for don't have error in diferents conexions
-    conn = sqlite3.connect("mi_base.db", check_same_thread=False)
+    conn = sqlite3.connect("my_base.db", check_same_thread=False)
     # this is for get rows by name 
     conn.row_factory = sqlite3.Row
     return conn
@@ -55,9 +55,20 @@ api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
 # funtion for check passwork api
 async def check_api(api_key: str = Depends(api_key_header)):
-    if api_key != X_API_KEY:
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT id FROM companies WHERE api_key = ?", (api_key,))
+
+    row = cursor.fetchone()
+    if row:
+        campany_id = row["id"]
+        return campany_id
+    else:
         raise HTTPException(status_code=401, detail="API KEY inválida")
-    return True
+
+    # if api_key != X_API_KEY:
+    #     raise HTTPException(status_code=401, detail="API KEY inválida")
+    # return True
 
 # funtion for get data user while scan QR
 def get_data_user(qr_id, ip_client, user_agent):
@@ -128,7 +139,7 @@ async def scan_qr(qr_id: str, request: Request):
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/create", dependencies=[Depends(check_api)])
-async def create_qr(request: Request):
+async def create_qr(request: Request, company_id: int = Depends(check_api)):
     # verify api key
     # check_api(request)
 
@@ -143,7 +154,7 @@ async def create_qr(request: Request):
     if not url or not name:
         raise HTTPException(status_code=400, detail="url and name are requared")
     
-    qrs(url, name, logoname)
+    qrs(company_id, url, name, logoname)
     # print(url, name, logoname)
 
     return JSONResponse({
