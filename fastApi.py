@@ -18,6 +18,8 @@ from Qr_generator import qrs
 import asyncio
 # for extract API-KEY
 from fastapi.security.api_key import APIKeyHeader
+# for geolocation with GeoLite2
+import geoip2.database 
 
 app = FastAPI()
 
@@ -32,17 +34,36 @@ def get_db():
 def get_geo_ip(ip):
     try:
 
+        """ Geolocation with ipapi.co API """
         # https://ipapi.com/pricing 100 free requests per month (We need a different)
         url = f"https://ipapi.co/{ip}/json/"
         # timeout=5 avoid error in the API
         response = requests.get(url, timeout=5)
-        data = response.json()
+        data_ipapi = response.json()
+
+        """ Geolocation with GeoLite2 database """
+        reader = geoip2.database.Reader("GeoLite2-City.mmdb")
+        data_geolite = reader.city(ip)
+
+        """ Geolocation with ip-api.com API """
+        url2 = f"http://ip-api.com/json/{ip}"
+        data_ip_api = requests.get(url2, timeout=5).json()
 
         return {
-            "country": data.get("country_name"),
-            "city": data.get("city"),
-            "latitude": data.get("latitude"),
-            "longitude": data.get("longitude")
+            "country_ipapi": data_ipapi.get("country_name"),
+            "city_ipapi": data_ipapi.get("city"),
+            "latitude_ipapi": data_ipapi.get("latitude"),
+            "longitude_ipapi": data_ipapi.get("longitude"),
+
+            "country_geolite": data_geolite.country.name,
+            "city_geolite": data_geolite.city.name,
+            "latitude_geolite": data_geolite.location.latitude,
+            "longitude_geolite": data_geolite.location.longitude,
+
+            "country_ip_api": data_ip_api.get("country"),
+            "city_ip_api": data_ip_api.get("city"),
+            "latitude_ip_api": data_ip_api.get("lat"),
+            "longitude_ip_api": data_ip_api.get("lon"),
         }
     except:
         return None
@@ -82,17 +103,51 @@ def get_data_user(qr_id, ip_client, user_agent):
 
     # 6. Guardar los datos del escaneo
     cursor.execute("""
-        INSERT INTO users_scam (qr_id, ip, device, country, city, latitude, longitude, datetime)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users_scam (id_unique, ip, device, datetime)
+        VALUES (?, ?, ?, ?)
     """, (
         qr_id,
         ip_client,
         user_agent,
-        geo["country"] if geo else None,
-        geo["city"] if geo else None,
-        geo["latitude"] if geo else None,
-        geo["longitude"] if geo else None,
         present_date
+    ))
+
+    cursor.execute("SELECT id FROM users_scam WHERE id_unique = ?", (qr_id,))
+    row = cursor.fetchone()
+    id_users_scam = row["id"]
+
+    cursor.execute("""
+        INSERT INTO geo_registers (id_users_scam, geo_name, country, city, latitude, longitude)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        id_users_scam,
+        "ipapi.co",
+        geo["country_ipapi"] if geo else None,
+        geo["city_ipapi"] if geo else None,
+        geo["latitude_ipapi"] if geo else None,
+        geo["longitude_ipapi"] if geo else None,
+    ))
+    cursor.execute("""
+        INSERT INTO geo_registers (id_users_scam, geo_name, country, city, latitude, longitude)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        id_users_scam,
+        "GeoLite2",
+        geo["country_geolite"] if geo else None,
+        geo["city_geolite"] if geo else None,
+        geo["latitude_geolite"] if geo else None,
+        geo["longitude_geolite"] if geo else None,
+    ))
+    cursor.execute("""
+        INSERT INTO geo_registers (id_users_scam, geo_name, country, city, latitude, longitude)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        id_users_scam,
+        "ip-api.com",
+        geo["country_ip_api"] if geo else None,
+        geo["city_ip_api"] if geo else None,
+        geo["latitude_ip_api"] if geo else None,
+        geo["longitude_ip_api"] if geo else None,
     ))
 
     db.commit()
