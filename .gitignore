@@ -10,3 +10,6 @@ logos/
 
 # Ignore json files
 example_json.py
+
+# Ignore GeoLite2 database
+GeoLite2-City.mmdb
