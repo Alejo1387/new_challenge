@@ -19,7 +19,9 @@ import asyncio
 # for extract API-KEY
 from fastapi.security.api_key import APIKeyHeader
 # for geolocation with GeoLite2
-import geoip2.database 
+import geoip2.database
+# for get data on body request
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -153,6 +155,11 @@ def get_data_user(qr_id, ip_client, user_agent):
     db.commit()
     db.close()
 
+# for get data on body request
+class QRData(BaseModel):
+    url: str
+    name: str
+    logoname: str = None
 
 """ ---------- APIs ---------- """
 @app.get("/scam/{qr_id}")
@@ -194,22 +201,22 @@ async def scan_qr(qr_id: str, request: Request):
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/create", dependencies=[Depends(check_api)])
-async def create_qr(request: Request, company_id: int = Depends(check_api)):
+async def create_qr(CreateData: QRData, company_id: int = Depends(check_api)):
     # verify api key
     # check_api(request)
 
     # it's for get data
-    data = await request.json()
+    # data = await request.json()
 
-    url = data.get("url")
-    name = data.get("name")
-    logoname = data.get("logoname")
+    # url = data.get("url")
+    # name = data.get("name")
+    # logoname = data.get("logoname")
 
     # check data
-    if not url or not name:
+    if not CreateData.url or not CreateData.name:
         raise HTTPException(status_code=400, detail="url and name are requared")
     
-    qrs(company_id, url, name, logoname)
+    qrs(company_id, CreateData.url, CreateData.name, CreateData.logoname)
     # print(url, name, logoname)
 
     return JSONResponse({
