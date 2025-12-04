@@ -13,3 +13,6 @@ example_json.py
 
 # Ignore GeoLite2 database
 GeoLite2-City.mmdb
+
+# Ignore file geoLite edits
+example_geoLite.py
