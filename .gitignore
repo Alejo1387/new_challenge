@@ -19,3 +19,6 @@ app/core/create_DB.py
 
 #ignore tests
 tests/
+
+# Ignore all pycache
+**/__pycache__/
