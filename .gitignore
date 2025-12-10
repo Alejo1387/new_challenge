@@ -1,18 +1,21 @@
 # DB
-my_base.db
+app/data/my_base.db
 
 # Ignore database.py edits
-database.py
+app/core/database.py
 
 # Ignore file edits
-img/
-logos/
+app/img/
+app/logos/
 
 # Ignore json files
 example_json.py
 
 # Ignore GeoLite2 database
-GeoLite2-City.mmdb
+app/resources
 
-# Ignore file geoLite edits
-example_geoLite.py
+# Ignore create DB
+app/core/create_DB.py
+
+#ignore tests
+tests/
