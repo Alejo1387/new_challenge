@@ -4,10 +4,13 @@ from app.core.va_url import validate_url
 from app.utils.create_uuid import create_unique
 from app.core.database import SessionLocal
 from sqlalchemy import text
+from app.utils.create_name_file import create_unique as create_name_file
 
-def qrs(company_id, url, fileName, logo_archive=None):
+def qrs(company_id, url, logo_archive=None):
     if(validate_url(url)):
         db = SessionLocal()
+
+        fileName = create_name_file()
 
         unique_id = create_unique()
         server_url = f"http://127.0.0.1:8000/scam/{unique_id}"
@@ -69,4 +72,4 @@ def qrs(company_id, url, fileName, logo_archive=None):
         finally:
             db.close()
     else:
-        print("URL mal escrita")
+        return ("URL don't valid")
