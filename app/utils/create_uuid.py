@@ -1,4 +1,4 @@
 import uuid
 
 def create_unique():
-    return uuid.uuid4().hex[:12]
+    return uuid.uuid7().hex[:12]
