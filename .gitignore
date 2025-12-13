@@ -10,6 +10,7 @@ app/logos/
 
 # Ignore json files
 example_json.py
+example_json_file.json
 
 # Ignore GeoLite2 database
 app/resources
