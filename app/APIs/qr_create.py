@@ -3,6 +3,7 @@ from app.models.Qr_model import QRData
 from app.core.security import check_api
 from app.services.qr_generator import qrs
 from app.services.verify_logo import ver_logo
+from fastapi.responses import FileResponse
 
 router = APIRouter()
 
@@ -19,7 +20,9 @@ async def create_qr(CreateData: QRData, company_id: int = Depends(check_api)):
 
     if result == "URL don't valid":
         raise HTTPException(status_code=400, detail="URL is not valid")
-
-    return {
-        "message" : "QR create"
-    }
+    else:
+        try:
+            file_path = f"app/img/{result}"
+            return FileResponse(path=file_path, filename=result, media_type='application/octet-stream')
+        except Exception as e:
+            return {"error": str(e)}
