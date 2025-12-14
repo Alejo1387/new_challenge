@@ -69,6 +69,7 @@ def qrs(company_id, url, logo_archive=None):
             })
             db.commit()
             print(f"qr generado para el id de la company: {company_id}")
+            return f"{fileName}.png"
         finally:
             db.close()
     else:
