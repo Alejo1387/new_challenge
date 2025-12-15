@@ -4,9 +4,9 @@
 - [x] Como grabar reuniones en Linux ideal usar OBS Studio
 - [x] Mover el API KEY a un depends de FastAPI
 - [ ] Permitir que la gente suba archivos y se guardarlo usando un StorageService
-  - [ ] LocalDirectoryService
+  - [x] LocalDirectoryService
   - [ ] S3Service
-- [ ] Cuando se crea un QR se guarda usando el StorageService y tambien se descarga el archivo generado para el usuario
+- [x] Cuando se crea un QR se guarda usando el StorageService y tambien se descarga el archivo generado para el usuario
 - [ ] Crear un tests de toda el API usando pytest y crear una carpeta aparte para los tests que se llame tests
 - [x] Dividir scan_qr en 2 funciones, redirecionar y obtener informaccion geografica
 - [x] Dividir el codigo en API, servicios y modelos
@@ -23,7 +23,7 @@
   - [x] Mantener el codigo el anterior y añadir una funcion adicional
     - [x] Bueno comparar que diferencias hay entre las 2  cual es más precisa
 - [ ] Crear servicio para manejo de archivos
-    - [ ] LocalDirectoryService
+    - [x] LocalDirectoryService
     - [ ] S3Service
     - [ ] GCSService
 - [ ] Editar un QR
@@ -32,10 +32,10 @@
     - QR [[[[[[[]]]]]]] -> url/scan/{{id}} -> redirige a www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
       - En vez de apuntar a www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
 - [x] Añadir logo en la mitad del QR q se vea medio bonito (libreria PIL)
-- [ ] CLI tool para usarlo
-  - [ ] Comandos sencillos para ejecutar el API desde la terminal
-  - [ ] Comandos para crear QRs desde la terminal. Ej: python qr_tool.py create --url "https://example.com" --output "qrcode.png"
-  - [ ] Comandos para escanear QRs desde la terminal. Ej: python qr_tool.py scan --image "qrcode.png"
+- [x] CLI tool para usarlo
+  - [x] Comandos sencillos para ejecutar el API desde la terminal
+  - [x] Comandos para crear QRs desde la terminal. Ej: python qr_tool.py create --url "https://example.com" --output "qrcode.png"
+  - [x] Comandos para escanear QRs desde la terminal. Ej: python qr_tool.py scan --image "qrcode.png"
 
 - ENTREGAR A CAMILO
 
