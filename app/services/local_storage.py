@@ -23,8 +23,8 @@ async def save_file(file: UploadFile, filename: str, tenant_id: str):
     
     try:
         db.execute(text("""
-            INSERT INTO logos (id, tenant_id) VALUES (:id, :tenant_id)
-        """), {"id": new_name, "tenant_id": tenant_id})
+            INSERT INTO logos (id, tenant_id, storage) VALUES (:id, :tenant_id, :storage)
+        """), {"id": new_name, "tenant_id": tenant_id, "storage": "Local"})
         db.commit()
     finally:
         db.close()
