@@ -3,9 +3,9 @@
 - [x] Unificar API
 - [x] Como grabar reuniones en Linux ideal usar OBS Studio
 - [x] Mover el API KEY a un depends de FastAPI
-- [ ] Permitir que la gente suba archivos y se guardarlo usando un StorageService
+- [x] Permitir que la gente suba archivos y se guardarlo usando un StorageService
   - [x] LocalDirectoryService
-  - [ ] S3Service
+  - [x] S3Service
 - [x] Cuando se crea un QR se guarda usando el StorageService y tambien se descarga el archivo generado para el usuario
 - [ ] Crear un tests de toda el API usando pytest y crear una carpeta aparte para los tests que se llame tests
 - [x] Dividir scan_qr en 2 funciones, redirecionar y obtener informaccion geografica
@@ -24,7 +24,7 @@
     - [x] Bueno comparar que diferencias hay entre las 2  cual es más precisa
 - [ ] Crear servicio para manejo de archivos
     - [x] LocalDirectoryService
-    - [ ] S3Service
+    - [x] S3Service
     - [ ] GCSService
 - [ ] Editar un QR
   - [ ] Whatsapp www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
