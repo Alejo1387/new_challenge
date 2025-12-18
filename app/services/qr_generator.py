@@ -5,72 +5,53 @@ from app.utils.create_uuid import create_unique
 from app.core.database import SessionLocal
 from sqlalchemy import text
 from app.utils.create_name_file import create_unique as create_name_file
+from app.utils.qr_create import create_qr
+from app.models.Qr_model import QRCreate1
+from app.models.Qr_model import QRCreate2
 
-def qrs(company_id, url, logo_archive=None):
-    if(validate_url(url)):
+def qrs(qr_data: QRCreate1):
+    if(validate_url(qr_data.url)):
         db = SessionLocal()
+        get_storage = db.execute(text("""
+            SELECT storage FROM logos WHERE id = :logo_id
+        """), {"logo_id" : qr_data.logoname})
+
+        row = get_storage.fetchone()
 
         fileName = create_name_file()
 
         unique_id = create_unique()
         server_url = f"http://127.0.0.1:8000/scam/{unique_id}"
 
-        qr_code = qrcode.QRCode(
-            # size of qr
-            version=1,
-            # for qr with logo
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
-            # size of each QR code
-            box_size=10,
-            # size of border
-            border=4,
+        Qrcreate2 = QRCreate2(
+            company_id=qr_data.company_id,
+            url=qr_data.url,
+            logoname=qr_data.logoname,
+            storage=qr_data.storage,
+            fileName=fileName,
+            server_url=server_url,
+            logo_storage=row[0]
         )
-
-        qr_code.add_data(server_url)
-        qr_code.make(fit=True)
-        qr_img = qr_code.make_image(fill_color="black", back_color="white").convert("RGB")
-
-        if logo_archive is not None:
-            logoA = f"app/logos/{logo_archive}"
-            try:
-                # open the image with pollow
-                logo = Image.open(logoA)
-
-                # resize the logo
-                qr_width, qr_height = qr_img.size
-                logo_size = int(qr_width * 0.25)
-
-                logo = logo.resize((logo_size, logo_size))
-
-                # center the logo
-                pos = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
-
-                # paste the logo
-                qr_img.paste(logo, pos)
-
-            except Exception as e:
-                print("⚠ Hubo un error cargando el logo, se generará sin logo.")
-                print("Detalles:", e)
-
-        save_img = "app/img/" + (fileName + ".png")
-        qr_img.save(save_img)
+        
+        create_qr(Qrcreate2)
 
         try:
             db.execute(text("""
-                INSERT INTO qrs (tenant_id, logo_name, qr_name, destination_url, server_url, unique_id)
-                VALUES (:tenant_id, :logo_name, :qr_name, :destination_url, :server_url, :unique_id)
+                INSERT INTO qrs (tenant_id, logo_name, qr_name, destination_url, server_url, unique_id, storage)
+                VALUES (:tenant_id, :logo_name, :qr_name, :destination_url, :server_url, :unique_id, :storage)
             """), {
-                "tenant_id" : company_id,
-                "logo_name" : logo_archive,
+                "tenant_id" : qr_data.company_id,
+                "logo_name" : qr_data.logoname,
                 "qr_name" : f"{fileName}.png",
-                "destination_url" : url,
+                "destination_url" : qr_data.url,
                 "server_url" : server_url,
-                "unique_id" : unique_id
+                "unique_id" : unique_id,
+                "storage" : qr_data.storage
             })
             db.commit()
-            print(f"qr generado para el id de la company: {company_id}")
-            return f"{fileName}.png"
+            print(f"qr generado para el id de la company: {qr_data.company_id}")
+            return [qr_data.storage, f"img/{fileName}.png"]
         finally:
             db.close()
     else:
-        return ("URL don't valid")
+        return ["URL don't valid"]
