@@ -7,7 +7,7 @@
   - [x] LocalDirectoryService
   - [x] S3Service
 - [x] Cuando se crea un QR se guarda usando el StorageService y tambien se descarga el archivo generado para el usuario
-- [ ] Crear un tests de toda el API usando pytest y crear una carpeta aparte para los tests que se llame tests
+- [x] Crear un tests de toda el API usando pytest y crear una carpeta aparte para los tests que se llame tests
 - [x] Dividir scan_qr en 2 funciones, redirecionar y obtener informaccion geografica
 - [x] Dividir el codigo en API, servicios y modelos
     - Servicio: Es un Wraper encima de la DB, nos permite hacer operaciones CRUD
@@ -26,9 +26,9 @@
     - [x] LocalDirectoryService
     - [x] S3Service
     - [ ] GCSService
-- [ ] Editar un QR
-  - [ ] Whatsapp www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
-    - [ ] Quiero cambiar el número o el texto pero mantener el mismo QR
+- [x] Editar un QR
+  - [x] Whatsapp www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
+    - [x] Quiero cambiar el número o el texto pero mantener el mismo QR
     - QR [[[[[[[]]]]]]] -> url/scan/{{id}} -> redirige a www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
       - En vez de apuntar a www.whatsapp.com/send?phone=+{{NUMERO}}&text={{TEXTO_URL_ENCODEADO}}
 - [x] Añadir logo en la mitad del QR q se vea medio bonito (libreria PIL)
