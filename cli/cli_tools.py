@@ -60,6 +60,23 @@ def qr_scan(image_path: str):
         print("⚠️ Unexpected response")
         print("Status:", response.status_code)
 
+def update_redirect(qr_id: str, new_url: str):
+    data = {
+        "qr_id": qr_id,
+        "new_url": new_url
+    }
+    response = requests.post(f"{API_URL}/update", json=data, headers=headers)
+    print("Status:", response.status_code)
+    # ✅ SI TODO SALE BIEN, GUARDAR EL ARCHIVO
+    if response.status_code == 200:
+        with open("qr_descargado_update.png", "wb") as f:
+            f.write(response.content)
+
+        print("Archivo descargado correctamente")
+    else:
+        # ❌ SOLO aquí intentar leer JSON
+        print("Error:", response.text)
+
 def main():
     parser = argparse.ArgumentParser(
         description="CLI Tool for creating and scanning QRs"
@@ -98,6 +115,20 @@ def main():
         help="Path to the image file containing the QR code to scan"
     )
 
+    update_parser = subparsers.add_parser("update", help="Update QR redirect URL")
+
+    update_parser.add_argument(
+        "--qr_id",
+        required=True,
+        help="ID of the QR code to update"
+    )
+
+    update_parser.add_argument(
+        "--new_url",
+        required=True,
+        help="New URL to set for the QR code"
+    )
+
     args = parser.parse_args()
 
     if args.command == "save":
@@ -106,6 +137,8 @@ def main():
         create_qr(args.url, args.name)
     elif args.command == "scan":
         qr_scan(args.image)
+    elif args.command == "update":
+        update_redirect(args.qr_id, args.new_url)
     else:
         parser.print_help()
 
