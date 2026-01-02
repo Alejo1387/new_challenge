@@ -6,8 +6,8 @@ from app.core.database import SessionLocal
 from sqlalchemy import text
 from app.utils.create_name_file import create_unique as create_name_file
 from app.utils.qr_create import create_qr
-from app.models.Qr_model import QRCreate1
-from app.models.Qr_model import QRCreate2
+from app.models.models_services import QRCreate1
+from app.models.models_utils import QRCreate2
 
 def qrs(qr_data: QRCreate1):
     if(validate_url(qr_data.url)):
