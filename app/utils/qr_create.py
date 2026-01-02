@@ -1,4 +1,4 @@
-from app.models.Qr_model import QRCreate2
+from app.models.models_utils import QRCreate2
 import qrcode
 from app.utils.read_s3 import read_file
 from PIL import Image
