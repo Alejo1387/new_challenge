@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
-from app.models.Qr_model import QRData
-from app.models.Qr_model import QRCreate1
+from app.models.models_apis import dataCreateQr
+from app.models.models_services import QRCreate1
 from app.core.security import check_api
 from app.services.qr_generator import qrs
 from app.services.verify_logo import ver_logo
@@ -13,7 +13,7 @@ router = APIRouter()
 storage = "S3"
 
 @router.post("/create")
-async def create_qr(CreateData: QRData, company_id: int = Depends(check_api)):
+async def create_qr(CreateData: dataCreateQr, company_id: int = Depends(check_api)):
     
     if CreateData.logoname:
         logo_exist = ver_logo(CreateData.logoname)
