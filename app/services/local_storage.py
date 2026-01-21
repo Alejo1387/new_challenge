@@ -1,7 +1,8 @@
 from fastapi import UploadFile
+from sqlalchemy import text
+
 from app.utils.create_name_file import create_unique
 from app.core.database import SessionLocal
-from sqlalchemy import text
 
 upload_dir = "app/logos"
 

@@ -1,13 +1,14 @@
 import qrcode
 from PIL import Image
-from app.core.va_url import validate_url
-from app.utils.create_uuid import create_unique
-from app.core.database import SessionLocal
 from sqlalchemy import text
+
+from app.models_py.models_services import QRCreate1
+from app.models_py.models_utils import QRCreate2
+from app.utils.create_uuid import create_unique
 from app.utils.create_name_file import create_unique as create_name_file
 from app.utils.qr_create import create_qr
-from app.models.models_services import QRCreate1
-from app.models.models_utils import QRCreate2
+from app.core.va_url import validate_url
+from app.core.database import SessionLocal
 
 def qrs(qr_data: QRCreate1):
     if(validate_url(qr_data.url)):

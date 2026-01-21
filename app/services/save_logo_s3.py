@@ -1,7 +1,8 @@
+from sqlalchemy import text
+
 from app.core.s3 import get_s3_client
 from app.utils.create_name_file import create_unique
 from app.core.database import SessionLocal
-from sqlalchemy import text
 
 async def save_logo_s3(file, filename, tenant_id):
     s3 = get_s3_client()

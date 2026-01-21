@@ -1,6 +1,7 @@
-from app.models.models_services import updateRedirectData
-from app.core.database import SessionLocal
 from sqlalchemy import text
+
+from app.models_py.models_services import updateRedirectData
+from app.core.database import SessionLocal
 
 async def update_redirect_data(data: updateRedirectData):
     db = SessionLocal()

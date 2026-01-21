@@ -1,9 +1,10 @@
 from fastapi import HTTPException
 import asyncio
-from app.utils.get_data import get_data_user
-from app.core.database import SessionLocal
 from sqlalchemy import text
 from fastapi.responses import RedirectResponse
+
+from app.utils.get_data import get_data_user
+from app.core.database import SessionLocal
 
 async def scan_service(qr_id, request):
     try:

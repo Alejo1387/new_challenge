@@ -1,5 +1,6 @@
-from app.core.database import SessionLocal
 from sqlalchemy import text
+
+from app.core.database import SessionLocal
 from app.utils.create_uuid import create_unique
 
 def save_data_user(qr_id, ip_client, user_agent, present_date, geo):
