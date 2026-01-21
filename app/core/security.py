@@ -1,7 +1,8 @@
 from fastapi.security.api_key import APIKeyHeader
 from fastapi import Depends, HTTPException
-from app.core.database import SessionLocal
 from sqlalchemy import text
+
+from app.core.database import SessionLocal
 
 api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
