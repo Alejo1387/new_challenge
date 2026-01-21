@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException
+
 from app.services.qr_scan import scan_service
 
 router = APIRouter()

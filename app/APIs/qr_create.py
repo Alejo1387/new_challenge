@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
-from app.models.models_apis import dataCreateQr
-from app.models.models_services import QRCreate1
-from app.core.security import check_api
-from app.services.qr_generator import qrs
-from app.services.verify_logo import ver_logo
 from fastapi.responses import FileResponse
 from fastapi.responses import StreamingResponse
 from io import BytesIO
+
+from app.models_py.models_apis import dataCreateQr
+from app.models_py.models_services import QRCreate1
+from app.services.qr_generator import qrs
+from app.services.verify_logo import ver_logo
 from app.utils.read_s3 import read_file
+from app.core.security import check_api
 
 router = APIRouter()
 storage = "S3"
