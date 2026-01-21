@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from app.APIs.qr_create import router as qr_create_router
 from app.APIs.qr_scan import router as qr_scan_router
 from app.APIs.save_logo import router as save_logo_router
