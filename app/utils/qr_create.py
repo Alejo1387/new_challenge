@@ -1,8 +1,9 @@
-from app.models.models_utils import QRCreate2
-import qrcode
-from app.utils.read_s3 import read_file
 from PIL import Image
 from io import BytesIO
+import qrcode
+
+from app.models_py.models_utils import QRCreate2
+from app.utils.read_s3 import read_file
 from app.services.save_img_s3 import upload_qr
 
 def create_qr(qr_data: QRCreate2):
